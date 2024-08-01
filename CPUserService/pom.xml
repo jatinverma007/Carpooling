@@ -9,7 +9,7 @@
 		<version>3.3.2</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.carpooling.CPUserService</groupId>
+	<groupId>com.carpooling.ums</groupId>
 	<artifactId>CPUserService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>CPUserService</name>

@@ -15,6 +15,7 @@ import lombok.Setter;
 public class RolesPermissionAction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
@@ -25,4 +26,5 @@ public class RolesPermissionAction {
     @JoinColumn(name = "permission_id", nullable = false)
     private Permission permission;
 }
+
 

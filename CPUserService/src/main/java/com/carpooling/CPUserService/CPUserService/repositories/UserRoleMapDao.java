@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.carpooling.CPUserService.CPUserService.entities.UserRoleMap;
 
-//UserRoleMap Repository
-public interface UserRoleMapRepository extends JpaRepository<UserRoleMap, Long> {
+//UserRoleMap Dao
+public interface UserRoleMapDao extends JpaRepository<UserRoleMap, Long> {
 }

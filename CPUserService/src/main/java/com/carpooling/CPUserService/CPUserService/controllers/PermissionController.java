@@ -5,42 +5,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.carpooling.CPUserService.CPUserService.entities.Permission;
-import com.carpooling.CPUserService.CPUserService.repositories.PermissionRepository;
+import com.carpooling.CPUserService.CPUserService.services.PermissionService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/permissions")
+@RequestMapping("/permissions")
 public class PermissionController {
 
     @Autowired
-    private PermissionRepository permissionRepository;
+    private PermissionService permissionService;
 
     @GetMapping
     public List<Permission> getAllPermissions() {
-        return permissionRepository.findAll();
+        return permissionService.getAllPermissions();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Permission> getPermissionById(@PathVariable Long id) {
-        Permission permission = permissionRepository.findById(id).orElse(null);
+        Permission permission = permissionService.getPermissionById(id);
         return permission != null ? ResponseEntity.ok(permission) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
     public Permission createPermission(@RequestBody Permission permission) {
-        return permissionRepository.save(permission);
+        return permissionService.createPermission(permission);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
-        Permission permission = permissionRepository.findById(id).orElse(null);
-        if (permission != null) {
-            permissionRepository.delete(permission);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        permissionService.deletePermission(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.carpooling.CPUserService.CPUserService.entities.Permission;
 
-//Permission Repository
-public interface PermissionRepository extends JpaRepository<Permission, Long> {
+//Permission Dao
+public interface PermissionDao extends JpaRepository<Permission, Long> {
 }

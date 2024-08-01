@@ -17,13 +17,20 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "street", length = 255, nullable = false)
     private String street;
+
+    @Column(name = "city", length = 255, nullable = false)
     private String city;
+
+    @Column(name = "state", length = 255, nullable = false)
     private String state;
+
+    @Column(name = "zip_code", length = 20, nullable = false)
     private String zipCode;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
 }
+

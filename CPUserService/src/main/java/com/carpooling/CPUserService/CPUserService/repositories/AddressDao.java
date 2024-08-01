@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.carpooling.CPUserService.CPUserService.entities.Address;
 
-//Address Repository
-public interface AddressRepository extends JpaRepository<Address, Long> {
+//Address Dao
+public interface AddressDao extends JpaRepository<Address, Long> {
 }

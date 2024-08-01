@@ -5,40 +5,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.carpooling.CPUserService.CPUserService.entities.RolesPermissionAction;
-import com.carpooling.CPUserService.CPUserService.repositories.RolesPermissionActionRepository;
+import com.carpooling.CPUserService.CPUserService.services.RolesPermissionActionService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rolespermissions")
+@RequestMapping("/rolespermissions")
 public class RolesPermissionActionController {
 
     @Autowired
-    private RolesPermissionActionRepository rolesPermissionActionRepository;
+    private RolesPermissionActionService rolesPermissionActionService;
 
     @GetMapping
     public List<RolesPermissionAction> getAllRolesPermissions() {
-        return rolesPermissionActionRepository.findAll();
+        return rolesPermissionActionService.getAllRolesPermissions();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RolesPermissionAction> getRolesPermissionById(@PathVariable Long id) {
-        RolesPermissionAction rolesPermissionAction = rolesPermissionActionRepository.findById(id).orElse(null);
-        return rolesPermissionAction != null ? ResponseEntity.ok(rolesPermissionAction) : ResponseEntity.notFound().build();
+        return rolesPermissionActionService.getRolesPermissionById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public RolesPermissionAction createRolesPermissionAction(@RequestBody RolesPermissionAction rolesPermissionAction) {
-        return rolesPermissionActionRepository.save(rolesPermissionAction);
+        return rolesPermissionActionService.createRolesPermissionAction(rolesPermissionAction);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRolesPermissionAction(@PathVariable Long id) {
-        RolesPermissionAction rolesPermissionAction = rolesPermissionActionRepository.findById(id).orElse(null);
-        if (rolesPermissionAction != null) {
-            rolesPermissionActionRepository.delete(rolesPermissionAction);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        rolesPermissionActionService.deleteRolesPermissionAction(id);
+        return ResponseEntity.noContent().build();
     }
 }

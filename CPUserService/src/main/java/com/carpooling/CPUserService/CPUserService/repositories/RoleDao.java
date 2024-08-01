@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.carpooling.CPUserService.CPUserService.entities.Role;
 
-//UserDetails Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+//UserDetails Dao
+public interface RoleDao extends JpaRepository<Role, Long> {
 }

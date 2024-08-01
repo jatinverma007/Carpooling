@@ -1,9 +1,6 @@
 package com.carpooling.CPUserService.CPUserService.entities;
 
 import jakarta.persistence.*;
-
-import jakarta.persistence.Entity;
-
 import java.util.List;
 import lombok.*;
 

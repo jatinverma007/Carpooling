@@ -17,12 +17,13 @@ import java.util.List;
 public class Permission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "permission_name", nullable = false, length = 255)
     private String permissionName;
 
-    @OneToMany(mappedBy = "permission")
+    @OneToMany(mappedBy = "permission", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RolesPermissionAction> rolesPermissionActions;
-
 }
+

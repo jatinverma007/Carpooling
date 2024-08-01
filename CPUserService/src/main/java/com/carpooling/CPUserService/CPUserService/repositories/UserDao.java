@@ -4,8 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.carpooling.CPUserService.CPUserService.entities.User;
 
-//User Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+//User Dao
+public interface UserDao extends JpaRepository<User, Long> {
 }
 
 

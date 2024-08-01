@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.carpooling.CPUserService.CPUserService.entities.UsersTnc;
 
-//UsersTnc Repository
-public interface UsersTncRepository extends JpaRepository<UsersTnc, Long> {
+//UsersTnc Dao
+public interface UsersTncDao extends JpaRepository<UsersTnc, Long> {
 }

@@ -5,41 +5,36 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.carpooling.CPUserService.CPUserService.entities.Role;
-import com.carpooling.CPUserService.CPUserService.repositories.RoleRepository;
+import com.carpooling.CPUserService.CPUserService.services.RoleService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/roles")
 public class RoleController {
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
 
     @GetMapping
     public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+        return roleService.getAllRoles();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Role> getRoleById(@PathVariable Long id) {
-        Role role = roleRepository.findById(id).orElse(null);
+        Role role = roleService.getRoleById(id);
         return role != null ? ResponseEntity.ok(role) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
     public Role createRole(@RequestBody Role role) {
-        return roleRepository.save(role);
+        return roleService.createRole(role);
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
-        Role role = roleRepository.findById(id).orElse(null);
-        if (role != null) {
-            roleRepository.delete(role);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        roleService.deleteRole(id);
+        return ResponseEntity.noContent().build();
     }
 }

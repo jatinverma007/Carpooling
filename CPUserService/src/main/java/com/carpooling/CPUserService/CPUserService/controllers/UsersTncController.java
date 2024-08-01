@@ -5,40 +5,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.carpooling.CPUserService.CPUserService.entities.UsersTnc;
-import com.carpooling.CPUserService.CPUserService.repositories.UsersTncRepository;
+import com.carpooling.CPUserService.CPUserService.services.UsersTncService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/userstnc")
+@RequestMapping("/userstnc")
 public class UsersTncController {
 
     @Autowired
-    private UsersTncRepository usersTncRepository;
+    private UsersTncService usersTncService;
 
     @GetMapping
     public List<UsersTnc> getAllUsersTnc() {
-        return usersTncRepository.findAll();
+        return usersTncService.getAllUsersTnc();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UsersTnc> getUsersTncById(@PathVariable Long id) {
-        UsersTnc usersTnc = usersTncRepository.findById(id).orElse(null);
-        return usersTnc != null ? ResponseEntity.ok(usersTnc) : ResponseEntity.notFound().build();
+        return usersTncService.getUsersTncById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public UsersTnc createUsersTnc(@RequestBody UsersTnc usersTnc) {
-        return usersTncRepository.save(usersTnc);
+        return usersTncService.createUsersTnc(usersTnc);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UsersTnc> updateUsersTnc(@PathVariable Long id, @RequestBody UsersTnc usersTncDetails) {
+        UsersTnc updatedUsersTnc = usersTncService.updateUsersTnc(id, usersTncDetails);
+        return updatedUsersTnc != null ? ResponseEntity.ok(updatedUsersTnc) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsersTnc(@PathVariable Long id) {
-        UsersTnc usersTnc = usersTncRepository.findById(id).orElse(null);
-        if (usersTnc != null) {
-            usersTncRepository.delete(usersTnc);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        usersTncService.deleteUsersTnc(id);
+        return ResponseEntity.noContent().build();
     }
 }

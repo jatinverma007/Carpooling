@@ -17,12 +17,16 @@ import java.util.Date;
 public class UsersTnc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "accepted", nullable = false)
     private boolean accepted;
+
+    @Column(name = "accepted_date")
     private Date acceptedDate;
 }

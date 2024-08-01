@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.Date;
 
+
 @Entity
 @Getter
 @Setter
@@ -19,12 +20,26 @@ public class EmergencyContact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name", length = 255, nullable = false)
     private String name;
+
+    @Column(name = "relationship", length = 255, nullable = false)
     private String relationship;
+
+    @Column(name = "phone_number", length = 20, nullable = false)
     private String phoneNumber;
+
+    @Column(name = "email", length = 255, nullable = true)
     private String email;
+
+    @Column(name = "address", length = 255, nullable = true)
     private String address;
+
+    @Column(name = "is_primary", nullable = false)
     private boolean isPrimary;
+
+    @Column(name = "created_at", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
     @ManyToOne

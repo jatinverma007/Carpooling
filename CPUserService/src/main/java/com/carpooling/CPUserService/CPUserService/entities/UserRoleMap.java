@@ -15,6 +15,7 @@ import lombok.Setter;
 public class UserRoleMap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
@@ -24,6 +25,4 @@ public class UserRoleMap {
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
-
 }
-

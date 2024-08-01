@@ -5,60 +5,44 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.carpooling.CPUserService.CPUserService.entities.UserDetails;
-import com.carpooling.CPUserService.CPUserService.repositories.UserDetailsRepository;
+import com.carpooling.CPUserService.CPUserService.services.UserDetailsService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/userdetails")
+@RequestMapping("/userdetails")
 public class UserDetailsController {
 
     @Autowired
-    private UserDetailsRepository userDetailsRepository;
+    private UserDetailsService userDetailsService;
 
     @GetMapping
     public List<UserDetails> getAllUserDetails() {
-        return userDetailsRepository.findAll();
+        return userDetailsService.getAllUserDetails();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDetails> getUserDetailsById(@PathVariable Long id) {
-        UserDetails userDetails = userDetailsRepository.findById(id).orElse(null);
-        return userDetails != null ? ResponseEntity.ok(userDetails) : ResponseEntity.notFound().build();
+        return userDetailsService.getUserDetailsById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public UserDetails createUserDetails(@RequestBody UserDetails userDetails) {
-        return userDetailsRepository.save(userDetails);
+        return userDetailsService.createUserDetails(userDetails);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDetails> updateUserDetails(@PathVariable Long id, @RequestBody UserDetails userDetailsDetails) {
-        UserDetails userDetails = userDetailsRepository.findById(id).orElse(null);
-        if (userDetails != null) {
-            userDetails.setFirstname(userDetailsDetails.getFirstname());
-            userDetails.setLastname(userDetailsDetails.getLastname());
-            userDetails.setAddress(userDetailsDetails.getAddress());
-            userDetails.setDob(userDetailsDetails.getDob());
-            userDetails.setGender(userDetailsDetails.getGender());
-            userDetails.setProfilePicture(userDetailsDetails.getProfilePicture());
-            userDetails.setBio(userDetailsDetails.getBio());
-            userDetails.setRegistrationDate(userDetailsDetails.getRegistrationDate());
-            userDetails.setLastLoginDate(userDetailsDetails.getLastLoginDate());
-            UserDetails updatedUserDetails = userDetailsRepository.save(userDetails);
-            return ResponseEntity.ok(updatedUserDetails);
-        }
-        return ResponseEntity.notFound().build();
+        UserDetails updatedUserDetails = userDetailsService.updateUserDetails(id, userDetailsDetails);
+        return updatedUserDetails != null ? ResponseEntity.ok(updatedUserDetails) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserDetails(@PathVariable Long id) {
-        UserDetails userDetails = userDetailsRepository.findById(id).orElse(null);
-        if (userDetails != null) {
-            userDetailsRepository.delete(userDetails);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        userDetailsService.deleteUserDetails(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

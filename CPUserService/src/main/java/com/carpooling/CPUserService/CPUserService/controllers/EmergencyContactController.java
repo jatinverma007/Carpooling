@@ -5,57 +5,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.carpooling.CPUserService.CPUserService.entities.EmergencyContact;
-import com.carpooling.CPUserService.CPUserService.repositories.EmergencyContactRepository;
+import com.carpooling.CPUserService.CPUserService.services.EmergencyContactService;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/emergencycontacts")
+@RequestMapping("/emergencycontacts")
 public class EmergencyContactController {
 
     @Autowired
-    private EmergencyContactRepository emergencyContactRepository;
+    private EmergencyContactService emergencyContactService;
 
     @GetMapping
     public List<EmergencyContact> getAllEmergencyContacts() {
-        return emergencyContactRepository.findAll();
+        return emergencyContactService.getAllEmergencyContacts();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<EmergencyContact> getEmergencyContactById(@PathVariable Long id) {
-        EmergencyContact emergencyContact = emergencyContactRepository.findById(id).orElse(null);
+        EmergencyContact emergencyContact = emergencyContactService.getEmergencyContactById(id);
         return emergencyContact != null ? ResponseEntity.ok(emergencyContact) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
     public EmergencyContact createEmergencyContact(@RequestBody EmergencyContact emergencyContact) {
-        return emergencyContactRepository.save(emergencyContact);
+        return emergencyContactService.createEmergencyContact(emergencyContact);
     }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<EmergencyContact> updateEmergencyContact(@PathVariable Long id, @RequestBody EmergencyContact emergencyContactDetails) {
-//        EmergencyContact emergencyContact = emergencyContactRepository.findById(id).orElse(null);
-//        if (emergencyContact != null) {
-//            emergencyContact.setName(emergencyContactDetails.getName());
-//            emergencyContact.setRelationship(emergencyContactDetails.getRelationship());
-//            emergencyContact.setPhoneNumber(emergencyContactDetails.getPhoneNumber());
-//            emergencyContact.setEmail(emergencyContactDetails.getEmail());
-//            emergencyContact.setAddress(emergencyContactDetails.getAddress());
-//            emergencyContact.setPrimary(emergencyContactDetails.isPrimary());
-//            EmergencyContact updatedEmergencyContact = emergencyContactRepository.save(emergencyContact);
-//            return ResponseEntity.ok(updatedEmergencyContact);
-//        }
-//        return ResponseEntity.notFound().build();
-//    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EmergencyContact> updateEmergencyContact(@PathVariable Long id, @RequestBody EmergencyContact emergencyContactDetails) {
+        EmergencyContact updatedEmergencyContact = emergencyContactService.updateEmergencyContact(id, emergencyContactDetails);
+        return updatedEmergencyContact != null ? ResponseEntity.ok(updatedEmergencyContact) : ResponseEntity.notFound().build();
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmergencyContact(@PathVariable Long id) {
-        EmergencyContact emergencyContact = emergencyContactRepository.findById(id).orElse(null);
-        if (emergencyContact != null) {
-            emergencyContactRepository.delete(emergencyContact);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        emergencyContactService.deleteEmergencyContact(id);
+        return ResponseEntity.noContent().build();
     }
 }
 
