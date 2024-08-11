@@ -5,13 +5,10 @@ import org.springframework.stereotype.Service;
 
 import com.carpooling.ums.dto.AddressDTO;
 import com.carpooling.ums.entities.Address;
-import com.carpooling.ums.entities.User;
 import com.carpooling.ums.repositories.AddressDao;
 import com.carpooling.ums.services.AddressService;
-import com.carpooling.ums.services.UserService;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -19,8 +16,6 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
     private AddressDao addressRepository;
     
-    @Autowired
-    private UserService userService;
 
     @Override
     public List<Address> getAllAddresses() {
@@ -46,7 +41,7 @@ public class AddressServiceImpl implements AddressService {
             address.setState(addressDTO.getState());
             address.setZipCode(addressDTO.getZipCode());
 
-            Optional<User> userOptional = userService.getUserById(addressDTO.getUserId());
+//            Optional<User> userOptional = userService.getUserById(addressDTO.getUserId());
 //            if (userOptional.isPresent()) {
 //                address.setUser(userOptional.get());
 //            }
