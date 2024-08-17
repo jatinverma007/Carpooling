@@ -24,4 +24,11 @@ public class DtoConverter {
     public static <T, D> T convertToEntity(D dto, Class<T> entityClass) {
         return modelMapper.map(dto, entityClass);
     }
+
+    // Convert a list of DTOs to a list of entities
+    public static <T, D> List<T> convertToEntityList(List<D> dtoList, Class<T> entityClass) {
+        return dtoList.stream()
+                .map(dto -> convertToEntity(dto, entityClass))
+                .collect(Collectors.toList());
+    }
 }
