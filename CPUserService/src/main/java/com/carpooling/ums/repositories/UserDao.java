@@ -6,6 +6,7 @@ import com.carpooling.ums.entities.User;
 
 //User Dao
 public interface UserDao extends JpaRepository<User, Long> {
+    User findByUsername(String username);
 }
 
 

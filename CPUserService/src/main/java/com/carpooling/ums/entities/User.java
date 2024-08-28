@@ -14,7 +14,6 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,10 +35,9 @@ public class User {
 
     @OneToOne
     @JoinColumn(name = "user_details_id", referencedColumnName = "id")
-    @JsonManagedReference // Add this to manage the serialization
+    @JsonManagedReference
     private UserDetails userDetails;
 
     @OneToMany(mappedBy = "user")
     private List<UserRoleMap> userRoleMaps;
-
 }

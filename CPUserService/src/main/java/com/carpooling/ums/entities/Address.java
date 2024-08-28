@@ -36,4 +36,3 @@ public class Address {
     @JsonIgnore
     private UserDetails userDetails;
 }
-
