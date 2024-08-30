@@ -30,14 +30,15 @@ public class User {
     @Column(nullable = false)
     private String roles;
 
-    @Column(name = "created_at", nullable = false)
-    private String createdAt;
+//    @Column(name = "created_at", nullable = true)
+//    private String createdAt;
 
     @OneToOne
-    @JoinColumn(name = "user_details_id", referencedColumnName = "id")
+    @JoinColumn(name = "user_details_id", referencedColumnName = "id", nullable = true)
     @JsonManagedReference
     private UserDetails userDetails;
 
     @OneToMany(mappedBy = "user")
+    @Column(nullable = true)
     private List<UserRoleMap> userRoleMaps;
 }

@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.dao.DataAccessException;
+
+import com.carpooling.ums.dto.UserDTO;
 import com.carpooling.ums.entities.User;
 import com.carpooling.ums.exceptions.UserServiceException;
 import com.carpooling.ums.repositories.UserDao;
@@ -42,9 +44,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
+    public User createUser(UserDTO user) {
         try {
-            return userRepository.save(user);
+        	User userDet = new User();
+        	userDet.setPassword(user.getPassword());
+        	userDet.setRoles(user.getRoles());
+        	userDet.setStatus(user.getStatus());
+        	userDet.setUsername(user.getUsername());
+            return userRepository.save(userDet);
         } catch (DataAccessException e) {
             logger.error("Error occurred while creating user", e);
             throw new UserServiceException("Unable to create user. Please try again later.", e);

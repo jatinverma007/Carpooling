@@ -55,24 +55,25 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<UserDTO>> createUser(@RequestBody UserDTO userDTO) {
-        try {
-            UserDetails userDetails = userDetailsService.getUserDetailsById(userDTO.getUserDetailsId())
-                    .orElse(null);
-
-            if (userDetails == null) {
-                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "UserDetails not found", null));
-            }
-
-            User user = DtoConverter.convertToEntity(userDTO, User.class);
-            user.setUserDetails(userDetails);
-
-            User createdUser = userService.createUser(user);
-            UserDTO createdUserDTO = DtoConverter.convertToDto(createdUser, UserDTO.class);
-            return ResponseEntity.ok(new ApiResponse<>(true, "User created successfully", createdUserDTO));
-        } catch (Exception e) {
-            logger.error("Error creating user", e);
-            return ResponseEntity.status(500).body(new ApiResponse<>(false, "Internal Server Error", null));
-        }
+   //     try {
+//            UserDetails userDetails = userDetailsService.getUserDetailsById(userDTO.getUserDetailsId())
+//                    .orElse(null);
+//
+//            if (userDetails == null) {
+//                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "UserDetails not found", null));
+//            }
+//
+//            User user = DtoConverter.convertToEntity(userDTO, User.class);
+//            user.setUserDetails(userDetails);
+//
+//            User createdUser = userService.createUser(user);
+//            UserDTO createdUserDTO = DtoConverter.convertToDto(createdUser, UserDTO.class);
+//            return ResponseEntity.ok(new ApiResponse<>(true, "User created successfully", createdUserDTO));
+//        } catch (Exception e) {
+//            logger.error("Error creating user", e);
+//            return ResponseEntity.status(500).body(new ApiResponse<>(false, "Internal Server Error", null));
+//        }
+    	return null;
     }
 
     @DeleteMapping("/{id}")

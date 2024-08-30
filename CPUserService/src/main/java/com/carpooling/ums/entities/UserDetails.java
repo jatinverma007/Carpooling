@@ -50,7 +50,7 @@ public class UserDetails {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastLoginDate;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = true, updatable = true)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
