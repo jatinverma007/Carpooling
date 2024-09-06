@@ -48,8 +48,8 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
             );
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-           logger.info("createAuthenticationToken : userDetails : {}",userDetails);
-             String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            logger.info("createAuthenticationToken : userDetails : {}",userDetails);
+            String jwt = jwtUtil.generateToken(userDetails.getUsername());
             return new AuthenticationResponse(jwt);
         } catch (Exception e) {
             throw new Exception("Incorrect username or password", e);

@@ -9,6 +9,8 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -50,8 +52,8 @@ public class UserDetails {
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastLoginDate;
 
-    @Column(name = "created_at", nullable = true, updatable = true)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at")
+    @CreationTimestamp
     private Date createdAt;
 
     @OneToOne
