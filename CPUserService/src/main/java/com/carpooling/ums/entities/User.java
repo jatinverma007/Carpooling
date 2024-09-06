@@ -3,6 +3,8 @@ package com.carpooling.ums.entities;
 import jakarta.persistence.*;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.*;
@@ -30,8 +32,9 @@ public class User {
     @Column(nullable = false)
     private String roles;
 
-//    @Column(name = "created_at", nullable = true)
-//    private String createdAt;
+    @CreationTimestamp
+    @Column(name = "CreatedOn")
+    private String createdAt;
 
     @OneToOne
     @JoinColumn(name = "user_details_id", referencedColumnName = "id", nullable = true)
