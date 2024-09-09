@@ -32,7 +32,7 @@ public class Address {
     private String zipCode;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_details_id", nullable = false)
     @JsonIgnore
     private UserDetails userDetails;
 }

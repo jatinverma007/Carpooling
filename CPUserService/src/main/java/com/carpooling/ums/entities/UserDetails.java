@@ -57,7 +57,7 @@ public class UserDetails {
     private Date createdAt;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 

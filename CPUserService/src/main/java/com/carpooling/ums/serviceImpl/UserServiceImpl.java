@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
 
 import com.carpooling.ums.dto.UserDTO;
+import com.carpooling.ums.dto.UserDetailsDTO;
+import com.carpooling.ums.entities.Address;
 import com.carpooling.ums.entities.User;
+import com.carpooling.ums.entities.UserDetails;
 import com.carpooling.ums.exceptions.UserServiceException;
 import com.carpooling.ums.repositories.UserDao;
 import com.carpooling.ums.services.UserService;
@@ -44,19 +47,53 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(UserDTO user) {
+    public User createUser(UserDTO userDTO) {
         try {
-        	User userDet = new User();
-        	userDet.setPassword(user.getPassword());
-        	userDet.setRoles(user.getRoles());
-        	userDet.setStatus(user.getStatus());
-        	userDet.setUsername(user.getUsername());
-            return userRepository.save(userDet);
+            // Convert UserDetailsDTO to UserDetails
+            UserDetailsDTO userDetailsDTO = userDTO.getUserDetails();
+            UserDetails userDetails = new UserDetails();
+            userDetails.setFirstname(userDetailsDTO.getFirstname());
+            userDetails.setLastname(userDetailsDTO.getLastname());
+            userDetails.setDob(userDetailsDTO.getDob());
+            userDetails.setGender(userDetailsDTO.getGender());
+            userDetails.setProfilePicture(userDetailsDTO.getProfilePicture());
+            userDetails.setBio(userDetailsDTO.getBio());
+            userDetails.setRegistrationDate(userDetailsDTO.getRegistrationDate());
+            userDetails.setLastLoginDate(userDetailsDTO.getLastLoginDate());
+
+//            // Convert AddressDTO list to Address entity list and set it in UserDetails
+//            List<Address> addresses = userDetailsDTO.getAddresses().stream()
+//                .map(addressDTO -> {
+//                    Address address = new Address();
+//                    address.setStreet(addressDTO.getStreet());
+//                    address.setCity(addressDTO.getCity());
+//                    address.setState(addressDTO.getState());
+//                    address.setZipCode(addressDTO.getZipCode());
+//                    address.setUserDetails(userDetails); // Set the userDetails in each address
+//                    return address;
+//                }).toList();
+//            userDetails.setAddresses(addresses);
+
+            // Convert UserDTO to User
+            User user = new User();
+            user.setUsername(userDTO.getUsername());
+            user.setPassword(userDTO.getPassword());
+            user.setRoles(userDTO.getRoles());
+            user.setStatus(userDTO.getStatus());
+
+            // Set UserDetails to User
+            userDetails.setUser(user);
+            user.setUserDetails(userDetails);
+
+            // Save User entity
+            return userRepository.save(user);
         } catch (DataAccessException e) {
             logger.error("Error occurred while creating user", e);
             throw new UserServiceException("Unable to create user. Please try again later.", e);
         }
     }
+
+
 
     @Override
     public boolean deleteUser(Long id) {

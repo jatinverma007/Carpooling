@@ -1,5 +1,7 @@
 package com.carpooling.ums.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,4 +16,7 @@ public class UserDTO {
     private String password;
     private String status;
     private String roles;
+    private UserDetailsDTO userDetails;
+    private List<AddressDTO> addresses;
+
 }

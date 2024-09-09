@@ -30,43 +30,46 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
 
-
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         final String authorizationHeader = request.getHeader("Authorization");
-        String path = request.getServletPath(); 
-        logger.info("do fiilter : path  : {}",path);
+        String path = request.getServletPath();
+        logger.info("doFilterInternal: path: {}", path);
         String username = null;
         String jwt = null;
-           
-        if("/login".equals(path) || "/signup".equals(path)) {
-        	logger.info("do fiilter : path filtered ");
-         filterChain.doFilter(request, response);        
-         return; 
+
+        if ("/login".equals(path) || "/signup".equals(path)) {
+            logger.info("doFilterInternal: path is /login or /signup, skipping filter");
+            filterChain.doFilter(request, response);
+            return;
         }
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-        	logger.info("do fiilter : token authentication ");
             jwt = authorizationHeader.substring(7);
             username = jwtUtil.extractUsername(jwt);
+            logger.info("doFilterInternal: Extracted username: {}", username);
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            logger.info("doFilterInternal: User details loaded: {}", userDetails);
 
-            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
+//            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+//                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+//                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+//                logger.info("doFilterInternal: Authentication set in SecurityContext");
+//            } else {
+//                logger.warn("doFilterInternal: JWT token validation failed");
+//            }
         }
+
         filterChain.doFilter(request, response);
-	}
+    }
+
 }
