@@ -1,21 +1,21 @@
 package com.carpooling.ums.entities;
 
-import com.carpooling.ums.dto.UserDetailsDTO;
+import com.carpooling.ums.dto.UserDTO;
 
 public class AuthenticationResponse {
     private final String jwt;
-    private final UserDetailsDTO userDetails;
+    private final UserDTO user;
 
-    public AuthenticationResponse(String jwt, UserDetailsDTO userDetails) {
+    public AuthenticationResponse(String jwt, UserDTO user) {
         this.jwt = jwt;
-        this.userDetails = userDetails;
+        this.user = user;
 	}
 
 	public String getJwt() {
         return jwt;
     }
     
-    public UserDetailsDTO getUserDetails() {
-        return userDetails;
+    public UserDTO getUserDetails() {
+        return user;
     }
 }

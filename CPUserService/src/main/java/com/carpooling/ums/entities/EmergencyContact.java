@@ -9,6 +9,7 @@ import lombok.Setter;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity
@@ -45,7 +46,7 @@ public class EmergencyContact {
     private Date createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    @JsonBackReference
+    @JoinColumn(name = "user_details_id", nullable = false)
+    @JsonIgnore
     private UserDetails userDetails;
 }

@@ -18,5 +18,5 @@ public class UserDTO {
     private String roles;
     private UserDetailsDTO userDetails;
     private List<AddressDTO> addresses;
-
+    private List<EmergencyContactDTO> emergencyContacts;
 }

@@ -65,7 +65,7 @@ public class UserDetails {
     @JsonManagedReference
     private List<Address> addresses;
 
-    @OneToMany(mappedBy = "userDetails")
+    @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<EmergencyContact> emergencyContacts;
 }
