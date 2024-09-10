@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import com.carpooling.ums.dto.AddressDTO;
@@ -27,6 +28,8 @@ import com.carpooling.ums.services.UserService;
 import com.carpooling.ums.utils.DtoConverter;
 import com.carpooling.ums.utils.JwtUtil;
 
+import jakarta.validation.ConstraintViolationException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +48,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDetailsDao userDetailsRepository;
-	
-    @Autowired
-    private JwtUtil jwtUtil;
+
+	@Autowired
+	private JwtUtil jwtUtil;
 
 	@Override
 	public List<User> getAllUsers() {
@@ -69,84 +72,130 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+//	@Override
+//	public ResponseEntity<?> createUser(UserDTO userDTO) {
+//	    try {
+//	        // Convert UserDetailsDTO to UserDetails
+//	        UserDetailsDTO userDetailsDTO = userDTO.getUserDetails();
+//	        UserDetails userDetails = convertToUserDetails(userDetailsDTO);
+//
+//	        // Convert AddressDTO list to Address entity list and set it in UserDetails
+//	        List<Address> addresses = convertToAddressList(userDTO.getAddresses(), userDetails);
+//	        userDetails.setAddresses(addresses);
+//
+//	        // Convert EmergencyContactDTO list to EmergencyContact entity list and set it in UserDetails
+//	        List<EmergencyContact> emergencyContacts = convertToEmergencyContactList(userDTO.getEmergencyContacts(), userDetails);
+//	        userDetails.setEmergencyContacts(emergencyContacts);
+//
+//	        // Save UserDetails first
+//	        UserDetails savedUserDetails = userDetailsRepository.save(userDetails);
+//
+//	        // Convert UserDTO to User and set UserDetails
+//	        User user = convertToUser(userDTO, savedUserDetails);
+//
+//	        // Save User entity
+//	        User savedUser = userRepository.save(user);
+//
+//	        // Convert saved user entity to UserDTO
+//	        UserDTO savedUserDTO = DtoConverter.convertToDto(savedUser, UserDTO.class);
+//
+//	        // Generate JWT token
+//	        String jwtToken = jwtUtil.generateToken(savedUser.getUsername());
+//
+//	        // Return UserCreationResponse with JWT token and UserDTO	        
+//            return ResponseEntity.ok(new AuthenticationResponse(jwtToken, savedUserDTO));
+//
+//
+//	    } catch (DataAccessException e) {
+//	        logger.error("Error occurred while creating user", e);
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("404", "Unable to create user. Please try again later."));
+//	    }
+//	}
+
 	@Override
 	public ResponseEntity<?> createUser(UserDTO userDTO) {
-	    try {
-	        // Convert UserDetailsDTO to UserDetails
-	        UserDetailsDTO userDetailsDTO = userDTO.getUserDetails();
-	        UserDetails userDetails = convertToUserDetails(userDetailsDTO);
+		try {
+			// Convert UserDTO to User entity
+			User user = convertToUser(userDTO);
 
-	        // Convert AddressDTO list to Address entity list and set it in UserDetails
-	        List<Address> addresses = convertToAddressList(userDTO.getAddresses(), userDetails);
-	        userDetails.setAddresses(addresses);
+			// Save User entity
+			User savedUser = userRepository.save(user);
 
-	        // Convert EmergencyContactDTO list to EmergencyContact entity list and set it in UserDetails
-	        List<EmergencyContact> emergencyContacts = convertToEmergencyContactList(userDTO.getEmergencyContacts(), userDetails);
-	        userDetails.setEmergencyContacts(emergencyContacts);
+			// Convert saved user entity to UserDTO
+			UserDTO savedUserDTO = new UserDTO();
+			savedUserDTO.setUsername(savedUser.getUsername());
+			savedUserDTO.setPassword(savedUser.getPassword());
+			savedUserDTO.setStatus(savedUser.getStatus());
+			savedUserDTO.setRoles(savedUser.getRoles());
 
-	        // Save UserDetails first
-	        UserDetails savedUserDetails = userDetailsRepository.save(userDetails);
+			// Generate JWT token
+			String jwtToken = jwtUtil.generateToken(savedUser.getUsername());
 
-	        // Convert UserDTO to User and set UserDetails
-	        User user = convertToUser(userDTO, savedUserDetails);
+			// Return AuthenticationResponse with JWT token and UserDTO
+			return ResponseEntity.ok(new AuthenticationResponse(jwtToken, savedUserDTO));
 
-	        // Save User entity
-	        User savedUser = userRepository.save(user);
+		} catch (BadCredentialsException e) {
+            logger.error("Authentication failed: Bad credentials for username: {}");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password.");
 
-	        // Convert saved user entity to UserDTO
-	        UserDTO savedUserDTO = DtoConverter.convertToDto(savedUser, UserDTO.class);
+        } catch (DataAccessException e) {
+            logger.error("Database error occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("A database error occurred. Please try again later.");
 
-	        // Generate JWT token
-	        String jwtToken = jwtUtil.generateToken(savedUser.getUsername());
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid argument error: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Invalid input provided. Please check the provided data and try again.");
 
-	        // Return UserCreationResponse with JWT token and UserDTO	        
-            return ResponseEntity.ok(new AuthenticationResponse(jwtToken, savedUserDTO));
+        } catch (ConstraintViolationException e) {
+            logger.error("Constraint violation error: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Data constraint violation occurred. Please ensure all required fields are provided correctly.");
 
-
-	    } catch (DataAccessException e) {
-	        logger.error("Error occurred while creating user", e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("404", "Unable to create user. Please try again later."));
-	    }
-	}
-	
-
-
-	private UserDetails convertToUserDetails(UserDetailsDTO userDetailsDTO) {
-	    return DtoConverter.convertToEntity(userDetailsDTO, UserDetails.class);
-	}
-
-
-	private List<Address> convertToAddressList(List<AddressDTO> addressDTOs, UserDetails userDetails) {
-	    List<Address> addresses = DtoConverter.convertToEntityList(addressDTOs, Address.class);
-	    addresses.forEach(address -> address.setUserDetails(userDetails));
-	    return addresses;
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred. Please contact support if the issue persists.");
+        }
 	}
 
+//	private UserDetails convertToUserDetails(UserDetailsDTO userDetailsDTO) {
+//		return DtoConverter.convertToEntity(userDetailsDTO, UserDetails.class);
+//	}
+//
+//	private List<Address> convertToAddressList(List<AddressDTO> addressDTOs, UserDetails userDetails) {
+//		List<Address> addresses = DtoConverter.convertToEntityList(addressDTOs, Address.class);
+//		addresses.forEach(address -> address.setUserDetails(userDetails));
+//		return addresses;
+//	}
+//
+//	private List<EmergencyContact> convertToEmergencyContactList(List<EmergencyContactDTO> emergencyContactDTOs,
+//			UserDetails userDetails) {
+//		return Optional.ofNullable(emergencyContactDTOs).filter(list -> !list.isEmpty())
+//				.map(list -> list.stream().map(dto -> {
+//					EmergencyContact contact = new EmergencyContact();
+//					contact.setName(dto.getName());
+//					contact.setPhoneNumber(dto.getPhoneNumber());
+//					contact.setRelationship(dto.getRelationship());
+//					contact.setEmail(dto.getEmail());
+//					contact.setAddress(dto.getAddress());
+//					contact.setPrimary(dto.isPrimary());
+//					contact.setCreatedAt(new Date());
+//					contact.setUserDetails(userDetails);
+//					return contact;
+//				}).toList()).orElse(Collections.emptyList());
+//	}
 
-	private List<EmergencyContact> convertToEmergencyContactList(List<EmergencyContactDTO> emergencyContactDTOs, UserDetails userDetails) {
-	    return Optional.ofNullable(emergencyContactDTOs)
-	            .filter(list -> !list.isEmpty())
-	            .map(list -> list.stream().map(dto -> {
-	                EmergencyContact contact = new EmergencyContact();
-	                contact.setName(dto.getName());
-	                contact.setPhoneNumber(dto.getPhoneNumber());
-	                contact.setRelationship(dto.getRelationship());
-	                contact.setEmail(dto.getEmail());
-	                contact.setAddress(dto.getAddress());
-	                contact.setPrimary(dto.isPrimary());
-	                contact.setCreatedAt(new Date());
-	                contact.setUserDetails(userDetails);
-	                return contact;
-	            }).toList())
-	            .orElse(Collections.emptyList());
+	private User convertToUser(UserDTO userDTO) {
+		User user = new User();
+		user.setUsername(userDTO.getUsername());
+		user.setPassword(userDTO.getPassword());
+		user.setStatus(userDTO.getStatus());
+		user.setRoles(userDTO.getRoles());
+		return user;
 	}
-
-	private User convertToUser(UserDTO userDTO, UserDetails savedUserDetails) {
-	    User user = DtoConverter.convertToEntity(userDTO, User.class);
-	    user.setUserDetails(savedUserDetails);
-	    return user;
-	}
-
 
 	@Override
 	public boolean deleteUser(Long id) {

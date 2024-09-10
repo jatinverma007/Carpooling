@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,8 @@ import com.carpooling.ums.services.MyUserDetailsService;
 import com.carpooling.ums.services.UserService;
 import com.carpooling.ums.utils.DtoConverter;
 import com.carpooling.ums.utils.JwtUtil;
+
+import jakarta.validation.ConstraintViolationException;
 
 @RestController
 public class AuthenticationController {
@@ -79,9 +82,30 @@ public class AuthenticationController {
 
             // Return AuthenticationResponse with JWT token and UserDTO
             return ResponseEntity.ok(new AuthenticationResponse(jwt, userDTO));
+        } catch (BadCredentialsException e) {
+            logger.error("Authentication failed: Bad credentials for username: {}", authenticationRequest.getUsername());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Invalid username or password.");
+
+        } catch (DataAccessException e) {
+            logger.error("Database error occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("A database error occurred. Please try again later.");
+
+        } catch (IllegalArgumentException e) {
+            logger.error("Invalid argument error: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Invalid input provided. Please check the provided data and try again.");
+
+        } catch (ConstraintViolationException e) {
+            logger.error("Constraint violation error: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest()
+                    .body("Data constraint violation occurred. Please ensure all required fields are provided correctly.");
+
         } catch (Exception e) {
-            logger.error("Error during authentication", e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("404", "Incorrect username or password"));
+            logger.error("Unexpected error occurred: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred. Please contact support if the issue persists.");
         }
     }
 

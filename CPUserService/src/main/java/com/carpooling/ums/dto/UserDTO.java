@@ -16,7 +16,4 @@ public class UserDTO {
     private String password;
     private String status;
     private String roles;
-    private UserDetailsDTO userDetails;
-    private List<AddressDTO> addresses;
-    private List<EmergencyContactDTO> emergencyContacts;
 }
