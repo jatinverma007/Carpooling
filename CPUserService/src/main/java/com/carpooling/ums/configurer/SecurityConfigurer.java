@@ -29,17 +29,17 @@ public class SecurityConfigurer {
     private JwtRequestFilter jwtRequestFilter;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login", "/signup", "/users", "/userdetails/**").permitAll() // Ensure /users is accessible
-                .anyRequest().authenticated()
+                .requestMatchers("/login", "/signup").permitAll() // Allow access to /login and /signup without authentication
+                .anyRequest().authenticated() // Require authentication for all other requests
             )
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Ensure no session is created
             )
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
 
         return http.build();
     }
