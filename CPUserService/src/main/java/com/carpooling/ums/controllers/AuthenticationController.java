@@ -87,20 +87,10 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("Invalid username or password.");
 
-        } catch (DataAccessException e) {
-            logger.error("Database error occurred: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("A database error occurred. Please try again later.");
-
         } catch (IllegalArgumentException e) {
             logger.error("Invalid argument error: {}", e.getMessage(), e);
             return ResponseEntity.badRequest()
                     .body("Invalid input provided. Please check the provided data and try again.");
-
-        } catch (ConstraintViolationException e) {
-            logger.error("Constraint violation error: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest()
-                    .body("Data constraint violation occurred. Please ensure all required fields are provided correctly.");
 
         } catch (Exception e) {
             logger.error("Unexpected error occurred: {}", e.getMessage(), e);

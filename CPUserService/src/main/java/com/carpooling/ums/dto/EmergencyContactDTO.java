@@ -21,4 +21,5 @@ public class EmergencyContactDTO {
     private String address;
     private boolean isPrimary;
     private Date createdAt;
+    private Long userId;
 }
