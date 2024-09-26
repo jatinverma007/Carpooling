@@ -15,4 +15,5 @@ public interface UserService {
     Optional<User> getUserById(Long id);
     ResponseEntity<?> createUser(UserDTO user);
     boolean deleteUser(Long id);
+    Boolean verifyUserByToken(String token);    
 }

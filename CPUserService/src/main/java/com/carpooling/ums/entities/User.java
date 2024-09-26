@@ -44,4 +44,12 @@ public class User {
     @OneToMany(mappedBy = "user")
     @Column(nullable = true)
     private List<UserRoleMap> userRoleMaps;
+    
+    @Column(name = "is_verified")
+	private boolean isVerified = false;
+    
+    @Column(name = "verificationToken")
+    private String verificationToken;
+
+
 }

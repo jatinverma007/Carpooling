@@ -28,6 +28,10 @@ import com.carpooling.ums.services.UserService;
 import com.carpooling.ums.utils.DtoConverter;
 import com.carpooling.ums.utils.JwtUtil;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
@@ -51,6 +55,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private JwtUtil jwtUtil;
+	
+    @PersistenceContext
+    private EntityManager entityManager;
 
 	@Override
 	public List<User> getAllUsers() {
@@ -87,7 +94,8 @@ public class UserServiceImpl implements UserService {
 			savedUserDTO.setPassword(savedUser.getPassword());
 			savedUserDTO.setStatus(savedUser.getStatus());
 			savedUserDTO.setRoles(savedUser.getRoles());
-
+			savedUserDTO.setVerified(false);
+			savedUserDTO.setVerificationToken(savedUser.getVerificationToken());
 			// Generate JWT token
 			String jwtToken = jwtUtil.generateToken(savedUser.getUsername());
 
@@ -127,6 +135,7 @@ public class UserServiceImpl implements UserService {
 		user.setPassword(userDTO.getPassword());
 		user.setStatus(userDTO.getStatus());
 		user.setRoles(userDTO.getRoles());
+		user.setVerificationToken(userDTO.getVerificationToken());
 		return user;
 	}
 
@@ -143,4 +152,30 @@ public class UserServiceImpl implements UserService {
 			throw new UserServiceException("Unable to delete user. Please try again later.", e);
 		}
 	}
+
+	@Override
+    public Boolean verifyUserByToken(String token) {
+        User user = findByVerificationToken(token);
+        if (user != null && !user.isVerified()) {
+            user.setVerified(true);
+            user.setVerificationToken(null);
+            userRepository.save(user);
+            return true;
+        }
+        return false; // Token is invalid or user is already verified
+    }
+
+	public User findByVerificationToken(String token) {
+	    TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class);
+	    query.setParameter("token", token);
+
+	    try {
+	        return query.getSingleResult();
+	    } catch (NoResultException e) {
+	        return null; // No user found with the given token
+	    }
+	}
+
+	
+
 }

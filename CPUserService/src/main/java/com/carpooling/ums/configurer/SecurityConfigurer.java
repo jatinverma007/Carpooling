@@ -33,7 +33,7 @@ public class SecurityConfigurer {
         http
             .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/login", "/signup").permitAll() // Allow access to /login and /signup without authentication
+                .requestMatchers("/login", "/signup", "/verify/user").permitAll() // Allow access to /login, /signup, and /verify/user without authentication
                 .anyRequest().authenticated() // Require authentication for all other requests
             )
             .sessionManagement(session -> session

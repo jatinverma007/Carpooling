@@ -45,7 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try {
             // Skip filter for login and signup paths
-            if ("/login".equals(path) || "/signup".equals(path)) {
+            if ("/login".equals(path) || "/signup".equals(path) || "/verify/user".equals(path)) {
                 logger.info("doFilterInternal: path is /login or /signup, skipping filter");
                 filterChain.doFilter(request, response);
                 return;
