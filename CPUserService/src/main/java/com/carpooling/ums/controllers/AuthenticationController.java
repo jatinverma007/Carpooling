@@ -31,7 +31,6 @@ import com.carpooling.ums.services.MyUserDetailsService;
 import com.carpooling.ums.services.UserService;
 import com.carpooling.ums.utils.DtoConverter;
 import com.carpooling.ums.utils.JwtUtil;
-import com.carpooling.ums.utils.Utility;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
