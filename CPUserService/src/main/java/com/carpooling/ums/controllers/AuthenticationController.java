@@ -1,6 +1,8 @@
 package com.carpooling.ums.controllers;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -84,7 +86,9 @@ public class AuthenticationController {
             logger.info("createAuthenticationToken : userDetails : {}", userDetails);
             
             // Generate JWT token
-            String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            String jwt = jwtUtil.generateAccessToken(userDetails.getUsername());
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails.getUsername());
+
 
             // Fetch the full User entity from the database
             User user = Optional.ofNullable(userRepository.findByUsername(authenticationRequest.getUsername()))
@@ -100,8 +104,13 @@ public class AuthenticationController {
             UserDTO userDTO = DtoConverter.convertToDto(user, UserDTO.class);
             userDTO.setConditionalVerificationToken(false, null);
 
+            Map<String, Object> response = new HashMap<>();
+            response.put("accessToken", jwt);
+            response.put("refreshToken", refreshToken);
+            response.put("user", userDTO);
+
             // Return AuthenticationResponse with JWT token and UserDTO
-            return ResponseEntity.ok(new AuthenticationResponse(jwt, userDTO));
+            return ResponseEntity.ok(response);
         } catch (BadCredentialsException e) {
             logger.error("Authentication failed: Bad credentials for username: {}", authenticationRequest.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

@@ -46,7 +46,7 @@ public class User {
     private List<UserRoleMap> userRoleMaps;
     
     @Column(name = "is_verified")
-	private boolean isVerified = false;
+    private boolean isVerified = false; // New field to track email verification status
     
     @Column(name = "verificationToken")
     private String verificationToken;

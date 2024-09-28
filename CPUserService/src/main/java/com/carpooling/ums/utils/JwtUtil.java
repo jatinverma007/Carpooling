@@ -15,6 +15,12 @@ public class JwtUtil {
 
     private String SECRET_KEY = "pZ2j+Txg6O/6uU4R8KZQjP6p8CkB6Q4LVp4yjt0zUqg=";
 
+    // Access token validity (10 hours)
+    private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60 * 10;
+
+    // Refresh token validity (30 days)
+    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 30;
+
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -32,21 +38,28 @@ public class JwtUtil {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String username) {
+    // Generate access token
+    public String generateAccessToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, username);
+        return createToken(claims, username, ACCESS_TOKEN_VALIDITY);
     }
 
-    private String createToken(Map<String, Object> claims, String subject) {
+    // Generate refresh token
+    public String generateRefreshToken(String username) {
+        Map<String, Object> claims = new HashMap<>();
+        return createToken(claims, username, REFRESH_TOKEN_VALIDITY);
+    }
+
+    private String createToken(Map<String, Object> claims, String subject, long validity) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + validity))
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                 .compact();
     }

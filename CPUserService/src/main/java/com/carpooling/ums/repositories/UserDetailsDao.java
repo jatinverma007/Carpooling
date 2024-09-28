@@ -6,4 +6,6 @@ import com.carpooling.ums.entities.UserDetails;
 
 //UserDetails Dao
 public interface UserDetailsDao extends JpaRepository<UserDetails, Long> {
+	
+	
 }

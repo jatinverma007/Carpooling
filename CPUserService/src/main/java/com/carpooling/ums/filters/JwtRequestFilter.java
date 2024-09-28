@@ -45,7 +45,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try {
             // Skip filter for login and signup paths
-            if ("/login".equals(path) || "/signup".equals(path) || "/verify/user".equals(path)) {
+            if ("/login".equals(path) || "/signup".equals(path) || "/verify/user".equals(path) || "/refresh-token/token".equals(path)) {
                 logger.info("doFilterInternal: path is /login or /signup, skipping filter");
                 filterChain.doFilter(request, response);
                 return;
@@ -53,6 +53,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
             String username = null;
             String jwt = null;
+            logger.info("dprinting this");
 
             // Check if Authorization header is present and starts with "Bearer "
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {

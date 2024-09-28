@@ -97,7 +97,7 @@ public class UserServiceImpl implements UserService {
 			savedUserDTO.setVerified(false);
 			savedUserDTO.setVerificationToken(savedUser.getVerificationToken());
 			// Generate JWT token
-			String jwtToken = jwtUtil.generateToken(savedUser.getUsername());
+			String jwtToken = jwtUtil.generateAccessToken(savedUser.getUsername());
 
 			// Return AuthenticationResponse with JWT token and UserDTO
 			return ResponseEntity.ok(new AuthenticationResponse(jwtToken, savedUserDTO));

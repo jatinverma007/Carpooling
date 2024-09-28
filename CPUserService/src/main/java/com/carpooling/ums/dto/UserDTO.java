@@ -16,7 +16,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserDTO {
     private String username;
-    @JsonIgnore
     private String password;
     private String status;
     private String roles;
@@ -37,7 +36,7 @@ public class UserDTO {
         if (include) {
             this.verificationToken = token;
         } else {
-            this.verificationToken = null;
+            this.verificationToken = null; // Not needed for login
         }
     }
 }
