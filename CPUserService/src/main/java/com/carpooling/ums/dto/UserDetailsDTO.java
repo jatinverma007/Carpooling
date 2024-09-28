@@ -20,11 +20,6 @@ public class UserDetailsDTO {
     private String gender;
     private String profilePicture;
     private String bio;
-    private Date registrationDate;
-    private Date lastLoginDate;
-    
     private List<EmergencyContactDTO> emergencyContacts;
     private List<AddressDTO> addresses;
-    private UsersTncDTO usersTnc;
-
 }

@@ -156,11 +156,6 @@ public class AuthenticationController {
         }
     }
 
-
-
-
-
-
     private void sendVerificationEmail(UserDTO user, HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString().replace(request.getServletPath(), ""); 
         String verificationToken = UUID.randomUUID().toString(); 

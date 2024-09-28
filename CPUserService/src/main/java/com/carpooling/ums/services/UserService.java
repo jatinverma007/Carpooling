@@ -16,4 +16,5 @@ public interface UserService {
     ResponseEntity<?> createUser(UserDTO user);
     boolean deleteUser(Long id);
     Boolean verifyUserByToken(String token);    
+    User findByUsername(String username);
 }

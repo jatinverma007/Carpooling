@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.dao.DataAccessException;
+
+import com.carpooling.ums.entities.User;
 import com.carpooling.ums.entities.UserDetails;
 import com.carpooling.ums.exceptions.UserDetailsServiceException;
 import com.carpooling.ums.repositories.UserDetailsDao;
@@ -62,8 +64,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     userDetails.setGender(userDetailsDetails.getGender());
                     userDetails.setProfilePicture(userDetailsDetails.getProfilePicture());
                     userDetails.setBio(userDetailsDetails.getBio());
-                    userDetails.setRegistrationDate(userDetailsDetails.getRegistrationDate());
-                    userDetails.setLastLoginDate(userDetailsDetails.getLastLoginDate());
+//                    userDetails.setRegistrationDate(userDetailsDetails.getRegistrationDate());
+//                    userDetails.setLastLoginDate(userDetailsDetails.getLastLoginDate());
                     return userDetailsRepository.save(userDetails);
                 }).orElse(null);
         } catch (DataAccessException e) {
@@ -85,4 +87,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UserDetailsServiceException("Unable to delete user details. Please try again later.", e);
         }
     }
+    
+    @Override
+    public Optional<UserDetails> findByUserId(Long userId) {
+        logger.info("Fetching UserDetails for userId: {}", userId);
+        Optional<UserDetails> userDetails = userDetailsRepository.findByUserId(userId);
+        
+        if (userDetails.isPresent()) {
+            logger.info("UserDetails found for userId: {}", userId);
+        } else {
+            logger.warn("No UserDetails found for userId: {}", userId);
+        }
+        
+        return userDetails;
+    }
+
+    
+    
 }

@@ -36,20 +36,21 @@ public class User {
     @Column(name = "CreatedOn")
     private String createdAt;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_details_id", referencedColumnName = "id", nullable = true)
-    @JsonManagedReference
     private UserDetails userDetails;
 
     @OneToMany(mappedBy = "user")
     @Column(nullable = true)
     private List<UserRoleMap> userRoleMaps;
-    
+
     @Column(name = "is_verified")
-    private boolean isVerified = false; // New field to track email verification status
+    private boolean isVerified = false; // Track email verification status
+
+    @Column(name = "verification_token")
+    private String verificationToken; 
     
-    @Column(name = "verificationToken")
-    private String verificationToken;
-
-
+    public User(String username) {
+        this.username = username;
+    }
 }

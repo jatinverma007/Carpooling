@@ -57,7 +57,7 @@ public class UserDetails {
     private Date createdAt;
 
     @OneToOne
-	@JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 
@@ -68,4 +68,8 @@ public class UserDetails {
     @OneToMany(mappedBy = "userDetails", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<EmergencyContact> emergencyContacts;
+    
+    @Column(name = "username", length = 255, nullable = false)
+    private String username;
+
 }
