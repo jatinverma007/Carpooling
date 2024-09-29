@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.carpooling.ums.dto.AddressDTO;
 import com.carpooling.ums.entities.Address;
+import com.carpooling.ums.entities.UserDetails;
 import com.carpooling.ums.exceptions.AddressServiceException;
 import com.carpooling.ums.repositories.AddressDao;
 import com.carpooling.ums.services.AddressService;
@@ -92,4 +93,9 @@ public class AddressServiceImpl implements AddressService {
             throw new AddressServiceException("Unable to delete address. Please try again later.", e);
         }
     }
+
+	@Override
+	public List<Address> getAddressesByUserDetails(UserDetails userDetails) {
+        return addressRepository.findByUserDetails(userDetails);
+	}
 }

@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.dao.DataAccessException;
+
+import com.carpooling.ums.dto.EmergencyContactDTO;
 import com.carpooling.ums.entities.EmergencyContact;
+import com.carpooling.ums.entities.UserDetails;
 import com.carpooling.ums.exceptions.EmergencyContactServiceException;
 import com.carpooling.ums.repositories.EmergencyContactDao;
 import com.carpooling.ums.services.EmergencyContactService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,4 +91,29 @@ public class EmergencyContactServiceImpl implements EmergencyContactService {
             throw new EmergencyContactServiceException("Unable to delete emergency contact. Please try again later.", e);
         }
     }
+
+	@Override
+	public List<EmergencyContact> getEmergencyContactsByUserDetails(UserDetails userDetails) {
+        return emergencyContactRepository.findByUserDetails(userDetails);
+	}
+
+    @Override
+    public EmergencyContact saveEmergencyContact(EmergencyContactDTO emergencyContactDTO, UserDetails userDetails) {
+        EmergencyContact emergencyContact = new EmergencyContact();
+        emergencyContact.setName(emergencyContactDTO.getName());
+        emergencyContact.setRelationship(emergencyContactDTO.getRelationship());
+        emergencyContact.setPhoneNumber(emergencyContactDTO.getPhoneNumber());
+        emergencyContact.setEmail(emergencyContactDTO.getEmail());
+        emergencyContact.setAddress(emergencyContactDTO.getAddress());
+        emergencyContact.setPrimary(emergencyContactDTO.isPrimary());
+        emergencyContact.setUserDetails(userDetails);
+        emergencyContact.setCreatedAt(new Date());
+
+        return emergencyContactRepository.save(emergencyContact);
+    }
+
+	@Override
+	public Optional<EmergencyContact> findById(Long id) {
+	    return emergencyContactRepository.findById(id);
+	}
 }

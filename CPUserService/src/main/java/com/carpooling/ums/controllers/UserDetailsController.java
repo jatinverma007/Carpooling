@@ -7,7 +7,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import com.carpooling.ums.dto.EmergencyContactDTO;
 import com.carpooling.ums.dto.UserDetailsDTO;
+import com.carpooling.ums.entities.EmergencyContact;
 import com.carpooling.ums.entities.User;
 import com.carpooling.ums.entities.UserDetails;
 import com.carpooling.ums.services.UserDetailsService;
@@ -67,14 +70,15 @@ public class UserDetailsController {
 	        logger.info("User found: {}", userDetails);
 	        logger.info("User ID: {}", userId);
 
-	        // Check if UserDetails is present
-//	        if (!userDetails.isPresent()) {
-//	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//	                    .body("User details not found.");
-//	        }
-
 	        // Convert UserDetails entity to UserDetailsDTO
 	        UserDetailsDTO userDetailsDTO = DtoConverter.convertToDto(userDetails, UserDetailsDTO.class);
+	        
+	        // Fetch emergency contacts associated with user details
+	        List<EmergencyContact> emergencyContacts = userDetails.get().getEmergencyContacts();
+	        List<EmergencyContactDTO> emergencyContactDTOs = DtoConverter.convertToDtoList(emergencyContacts, EmergencyContactDTO.class);
+
+	        userDetailsDTO.setEmergencyContacts(emergencyContactDTOs);
+
 	        logger.info("Successfully retrieved user details for username: {}", username);
 
 	        // Return success response with the UserDetailsDTO
