@@ -58,8 +58,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             // Check if Authorization header is present and starts with "Bearer "
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 jwt = authorizationHeader.substring(7);  // Extract token after "Bearer "
-                username = jwtUtil.extractUsername(jwt);
-                logger.info("doFilterInternal: Extracted username: {}", username);
+                try {
+                    username = jwtUtil.extractUsername(jwt);
+                    logger.info("doFilterInternal: Extracted username: {}", username);
+                } catch (ExpiredJwtException e) {
+                    logger.warn("JWT Token has expired: {}", e.getMessage());
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token has expired");
+                    return;
+                } catch (Exception e) {
+                    logger.error("JWT Token is invalid: {}", e.getMessage());
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token");
+                    return;
+                }
             } else {
                 logger.warn("doFilterInternal: Missing or malformed Authorization header");
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Authorization header is missing or not formatted correctly.");
