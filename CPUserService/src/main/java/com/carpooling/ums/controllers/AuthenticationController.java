@@ -99,6 +99,8 @@ public class AuthenticationController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("Please verify your email before logging in.");
             }
+            user.setToken(jwt);
+            userRepository.save(user);
 
             // Convert User entity to UserDTO, which includes UserDetailsDTO, AddressDTO, and EmergencyContactDTO
             UserDTO userDTO = DtoConverter.convertToDto(user, UserDTO.class);

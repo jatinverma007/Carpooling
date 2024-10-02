@@ -58,6 +58,7 @@ public class UserServiceImpl implements UserService {
 	
     @PersistenceContext
     private EntityManager entityManager;
+    
 
 	@Override
 	public List<User> getAllUsers() {
@@ -179,6 +180,7 @@ public class UserServiceImpl implements UserService {
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
+
 	
 
 }

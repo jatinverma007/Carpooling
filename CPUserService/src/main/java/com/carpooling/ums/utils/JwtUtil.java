@@ -72,6 +72,11 @@ public class JwtUtil {
     public boolean validateAccessToken(String token, String username) {
         return validateToken(token, username);
     }
+
+	public String extractRefreshTokenFromJWT(String token) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     
 

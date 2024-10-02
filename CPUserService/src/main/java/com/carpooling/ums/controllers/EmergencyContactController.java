@@ -103,21 +103,21 @@ public class EmergencyContactController {
         }
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ApiResponse<EmergencyContactDTO>> getEmergencyContactById(@PathVariable Long id) {
-//        try {
-//            EmergencyContact emergencyContact = emergencyContactService.getEmergencyContactById(id);
-//            if (emergencyContact != null) {
-//                EmergencyContactDTO emergencyContactDTO = DtoConverter.convertToDto(emergencyContact, EmergencyContactDTO.class);
-//                return ResponseEntity.ok(new ApiResponse<>(true, "Emergency contact retrieved successfully", emergencyContactDTO));
-//            } else {
-//                return ResponseEntity.status(404).body(new ApiResponse<>(false, "Emergency contact not found", null));
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error retrieving emergency contact with id: {}", id, e);
-//            return ResponseEntity.status(500).body(new ApiResponse<>(false, "Internal Server Error", null));
-//        }
-//    }
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<EmergencyContactDTO>> getEmergencyContactById(@PathVariable Long id) {
+        try {
+            EmergencyContact emergencyContact = emergencyContactService.getEmergencyContactById(id);
+            if (emergencyContact != null) {
+                EmergencyContactDTO emergencyContactDTO = DtoConverter.convertToDto(emergencyContact, EmergencyContactDTO.class);
+                return ResponseEntity.ok(new ApiResponse<>(true, "Emergency contact retrieved successfully", emergencyContactDTO));
+            } else {
+                return ResponseEntity.status(404).body(new ApiResponse<>(false, "Emergency contact not found", null));
+            }
+        } catch (Exception e) {
+            logger.error("Error retrieving emergency contact with id: {}", id, e);
+            return ResponseEntity.status(500).body(new ApiResponse<>(false, "Internal Server Error", null));
+        }
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<EmergencyContactDTO>> updateEmergencyContact(@PathVariable Long id, @RequestBody EmergencyContactDTO emergencyContactDTO) {
