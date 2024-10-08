@@ -21,6 +21,8 @@ import com.carpooling.ums.utils.ApiResponse;
 import com.carpooling.ums.utils.DtoConverter;
 import com.carpooling.ums.utils.JwtUtil;
 
+import software.amazon.awssdk.services.s3.model.S3Exception;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,8 @@ public class UserDetailsController {
 	
 	@Autowired
 	private S3Service s3Service;
+	
+	
 
 
 	@GetMapping
@@ -197,33 +201,52 @@ public class UserDetailsController {
 	@PutMapping("/updateProfilePicture")
 	public ResponseEntity<ApiResponse<String>> updateProfilePicture(@RequestParam("file") MultipartFile file) {
 	    // Get authenticated user's username
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String username = authentication.getName();
-		logger.info("entered into this");
-		// Check if the file is not empty
-		if (file.isEmpty()) {
-		    return ResponseEntity.status(HttpStatus.ACCEPTED)
-		            .body(new ApiResponse<>(false, "File is empty", null));
-		}
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String username = authentication.getName();
+	    logger.info("Entered into updateProfilePicture for user: {}", username);
+	    
+	    try {
+	        // Check if the file is not empty
+	        if (file.isEmpty()) {
+	            return ResponseEntity.status(HttpStatus.ACCEPTED)
+	                    .body(new ApiResponse<>(false, "File is empty", null));
+	        }
 
-		// Upload the file to S3 and get the URL
-		String profilePictureUrl = s3Service.uploadFile(file);
-		
-		// Find the existing user
-		User existingUser = userService.findByUsername(username);
-		
-		// Get the associated UserDetails
-		UserDetails userDetails = userDetailsService.findByUserId(existingUser.getId()).orElseThrow(() -> 
-		    new RuntimeException("User details not found for user: " + username)
-		);
+	        // Upload the file to S3 and get the URL
+	        String profilePictureUrl = s3Service.uploadFile(file);
+	        logger.info("File uploaded successfully to S3. URL: {}", profilePictureUrl);
 
-		// Update the user's profile picture via service method
-		boolean updated = userDetailsService.updateProfilePicture(userDetails, profilePictureUrl);
-		if (updated) {
-		    return ResponseEntity.ok(new ApiResponse<>(true, "Profile picture updated successfully", profilePictureUrl));
-		} else {
-		    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-		            .body(new ApiResponse<>(false, "User not found", null));
-		}
+	        // Find the existing user
+	        User existingUser = userService.findByUsername(username);
+	        if (existingUser == null) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body(new ApiResponse<>(false, "User not found", null));
+	        }
+
+	        // Get the associated UserDetails
+	        UserDetails userDetails = userDetailsService.findByUserId(existingUser.getId()).orElseThrow(() -> 
+	            new RuntimeException("User details not found for user: " + username)
+	        );
+
+	        // Update the user's profile picture via service method
+	        boolean updated = userDetailsService.updateProfilePicture(userDetails, profilePictureUrl);
+	        if (updated) {
+	            return ResponseEntity.ok(new ApiResponse<>(true, "Profile picture updated successfully", profilePictureUrl));
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                    .body(new ApiResponse<>(false, "User not found", null));
+	        }
+	        
+	    } catch (S3Exception e) {
+	        logger.error("S3Exception occurred while uploading the file: {}", e.awsErrorDetails().errorMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(new ApiResponse<>(false, "Failed to upload file to S3: " + e.awsErrorDetails().errorMessage(), null));
+
+	    } catch (RuntimeException e) {
+	        logger.error("RuntimeException occurred: {}", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+	                .body(new ApiResponse<>(false, "Error occurred: " + e.getMessage(), null));
+	    }
 	}
+
 }
