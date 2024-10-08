@@ -102,6 +102,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return userDetails;
     }
 
+    @Override
+    public boolean updateProfilePicture(UserDetails userDetails, String profilePictureUrl) {
+        try {
+            // Set the new profile picture URL
+            userDetails.setProfilePicture(profilePictureUrl);
+
+            // Save the updated UserDetails entity to the database
+            userDetailsRepository.save(userDetails);
+            return true; // Return true if the update was successful
+        } catch (Exception e) {
+            // Handle exception (log it, etc.)
+            return false; // Return false if there was an error during the update
+        }
+    }
     
     
 }

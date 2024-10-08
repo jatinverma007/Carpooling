@@ -14,4 +14,5 @@ public interface UserDetailsService {
     UserDetails updateUserDetails(Long id, UserDetails userDetailsDetails);
     boolean deleteUserDetails(Long id);
     Optional<UserDetails> findByUserId(Long userId);
+	boolean updateProfilePicture(UserDetails userDetails, String profilePictureUrl);
 }

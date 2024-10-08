@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import com.carpooling.ums.dto.UserDTO;
 import com.carpooling.ums.entities.AuthenticationResponse;
 import com.carpooling.ums.entities.User;
+import com.carpooling.ums.entities.UserDetails;
 
 public interface UserService {
 

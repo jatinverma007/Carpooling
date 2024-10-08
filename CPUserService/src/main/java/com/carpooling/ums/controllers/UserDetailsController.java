@@ -7,12 +7,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.carpooling.ums.dto.EmergencyContactDTO;
 import com.carpooling.ums.dto.UserDetailsDTO;
 import com.carpooling.ums.entities.EmergencyContact;
 import com.carpooling.ums.entities.User;
 import com.carpooling.ums.entities.UserDetails;
+import com.carpooling.ums.services.S3Service;
 import com.carpooling.ums.services.UserDetailsService;
 import com.carpooling.ums.services.UserService;
 import com.carpooling.ums.utils.ApiResponse;
@@ -22,6 +24,7 @@ import com.carpooling.ums.utils.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +42,9 @@ public class UserDetailsController {
 	
 	@Autowired
     private JwtUtil jwtUtil;
+	
+	@Autowired
+	private S3Service s3Service;
 
 
 	@GetMapping
@@ -185,6 +191,39 @@ public class UserDetailsController {
 		} catch (Exception e) {
 			logger.error("Error deleting user details with id: {}", id, e);
 			return ResponseEntity.status(500).body(new ApiResponse<>(false, "Internal Server Error", null));
+		}
+	}
+	
+	@PutMapping("/profile-picture")
+	public ResponseEntity<ApiResponse<String>> updateProfilePicture(@RequestParam("file") MultipartFile file) {
+	    // Get authenticated user's username
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String username = authentication.getName();
+		logger.info("entered into this");
+		// Check if the file is not empty
+		if (file.isEmpty()) {
+		    return ResponseEntity.status(HttpStatus.ACCEPTED)
+		            .body(new ApiResponse<>(false, "File is empty", null));
+		}
+
+		// Upload the file to S3 and get the URL
+		String profilePictureUrl = s3Service.uploadFile(file);
+		
+		// Find the existing user
+		User existingUser = userService.findByUsername(username);
+		
+		// Get the associated UserDetails
+		UserDetails userDetails = userDetailsService.findByUserId(existingUser.getId()).orElseThrow(() -> 
+		    new RuntimeException("User details not found for user: " + username)
+		);
+
+		// Update the user's profile picture via service method
+		boolean updated = userDetailsService.updateProfilePicture(userDetails, profilePictureUrl);
+		if (updated) {
+		    return ResponseEntity.ok(new ApiResponse<>(true, "Profile picture updated successfully", profilePictureUrl));
+		} else {
+		    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+		            .body(new ApiResponse<>(false, "User not found", null));
 		}
 	}
 }
