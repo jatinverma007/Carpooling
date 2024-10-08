@@ -38,11 +38,13 @@ public class RefreshablePropertyService {
         logger.info("Loading properties from database: {}", properties);
         propertiesMap.clear(); // Clear existing properties
         for (RefreshableProperty property : properties) {
+            logger.info("Loaded property: key={}, value={}, active={}", property.getKey(), property.getValue(), property.getActive());
             if (property.getActive() != null && property.getActive()) {
                 propertiesMap.put(property.getKey(), property.getValue());
             }
         }
     }
+
 
     public String getProperty(String key) {
         return propertiesMap.get(key);
