@@ -188,9 +188,6 @@ public class AuthenticationController {
             throw new RuntimeException("Failed to send email", e);
         }
     }
-
-
-    
  
 
 }

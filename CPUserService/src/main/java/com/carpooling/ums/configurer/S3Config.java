@@ -1,7 +1,6 @@
 package com.carpooling.ums.configurer;
 
 import com.carpooling.ums.services.RefreshablePropertyService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +18,19 @@ public class S3Config {
 
     private final RefreshablePropertyService propertyService;
 
+    // Store the S3Client instance
+    private S3Client s3Client;
+
     @Autowired
     public S3Config(RefreshablePropertyService propertyService) {
         this.propertyService = propertyService;
+        // Initialize the S3 client when the application starts
+        this.s3Client = createS3Client();
     }
 
-    @Bean
-    S3Client s3Client() {
-        // Fetch AWS properties from the refresh table or service
+    // Method to create a new S3Client with updated credentials
+    private S3Client createS3Client() {
+        // Fetch AWS properties from the refreshable property service
         String awsAccessKey = propertyService.getProperty("access-key");
         String awsSecretKey = propertyService.getProperty("secret-key");
         String bucketName = propertyService.getProperty("bucket-name");
@@ -42,9 +46,21 @@ public class S3Config {
 
         // Return the configured S3Client
         return S3Client.builder()
-                .region(Region.AP_SOUTH_1) // Set the region dynamically
+                .region(Region.AP_SOUTH_1) // Set the region
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(awsAccessKey, awsSecretKey)))
                 .build();
+    }
+
+    public void refreshS3Client() {
+        logger.info("Refreshing S3Client with updated properties.");
+        propertyService.refreshProperties();
+        this.s3Client = createS3Client(); // Recreate the S3 client with updated properties
+        logger.info("S3 Client refreshed successfully.");
+    }
+
+    @Bean
+    public S3Client s3Client() {
+        return this.s3Client; // Always return the latest S3 client instance
     }
 }
