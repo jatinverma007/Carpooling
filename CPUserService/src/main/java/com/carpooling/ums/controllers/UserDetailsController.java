@@ -194,7 +194,7 @@ public class UserDetailsController {
 		}
 	}
 	
-	@PutMapping("/profile-picture")
+	@PutMapping("/updateProfilePicture")
 	public ResponseEntity<ApiResponse<String>> updateProfilePicture(@RequestParam("file") MultipartFile file) {
 	    // Get authenticated user's username
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
