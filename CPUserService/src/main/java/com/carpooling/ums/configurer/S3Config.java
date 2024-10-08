@@ -11,13 +11,13 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Configuration
 public class S3Config {
 
-    @Value("$")
+    @Value("${aws.access-key}")
     private String awsAccessKey;
 
-    @Value("$}")
+    @Value("${aws.secret-key}")
     private String awsSecretKey;
 
-    @Value("$")
+    @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
     @Bean
