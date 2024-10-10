@@ -155,16 +155,17 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-    public Boolean verifyUserByToken(String token) {
-        User user = findByVerificationToken(token);
-        if (user != null && !user.isVerified()) {
-            user.setVerified(true);
-            user.setVerificationToken(null);
-            userRepository.save(user);
-            return true;
-        }
-        return false; // Token is invalid or user is already verified
-    }
+	public Boolean verifyUserByToken(String token) {
+	    User user = findByVerificationToken(token);
+	    if (user != null && !user.isVerified()) {
+	        user.setVerified(true);
+	        user.setVerificationToken(null);
+	        userRepository.save(user);
+	        return true;
+	    }
+	    return false;
+	}
+
 
 	public User findByVerificationToken(String token) {
 	    TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u WHERE u.verificationToken = :token", User.class);
